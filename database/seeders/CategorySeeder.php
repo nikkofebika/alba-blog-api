@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use App\Models\Category;
 
 class CategorySeeder extends Seeder
 {
@@ -13,6 +14,23 @@ class CategorySeeder extends Seeder
      */
     public function run()
     {
-        //
+    	$data = [
+    		[
+    			'title' => 'Nasional',
+    			'seo_title' => 'nasional',
+    		],
+    		[
+    			'title' => 'Ekonomi',
+    			'seo_title' => 'ekonomi',
+    		],
+    		[
+    			'title' => 'Olahraga',
+    			'seo_title' => 'olahraga',
+    		],
+    	];
+
+    	foreach ($data as $d) {
+    		Category::create($d);
+    	}
     }
 }
