@@ -18,16 +18,16 @@ class TagController extends Controller
 		}
 
 		if ($tag) {
-			return $this->sendResponse('tag found successfully', $tag, 201);
+			return $this->sendResponse('Tag found successfully', $tag, 201);
 		}
 
-		return $this->sendError('tag not found');
+		return $this->sendError('Tag not found');
 	}
 
 	public function store(Request $request)
 	{
 		$validator = Validator::make($request->all(), [
-			'title' => 'required|unique:categories',
+			'title' => 'required|unique:tags',
 		]);
 
 		if ($validator->fails()) {
@@ -40,7 +40,7 @@ class TagController extends Controller
 		]);
 
 		if ($tag) {
-			return $this->sendResponse('tag created succesfully', $tag, 201);
+			return $this->sendResponse('Tag created succesfully', $tag, 201);
 		}
 
 		return $this->sendError('Failed to create tag');
@@ -49,7 +49,7 @@ class TagController extends Controller
 	public function update(Request $request, $id)
 	{
 		$validator = Validator::make($request->all(), [
-			'title' => 'required|unique:categories,title,'.$id,
+			'title' => 'required|unique:tags,title,'.$id,
 		]);
 
 		if ($validator->fails()) {
@@ -63,10 +63,10 @@ class TagController extends Controller
 			$tag->seo_title = Str::slug($request->input('title'), '-');
 			$tag->save();
 
-			return $this->sendResponse('tag updated successfully', $tag);
+			return $this->sendResponse('Tag updated successfully', $tag);
 		}
 
-		return $this->sendError('tag not found');
+		return $this->sendError('Tag not found');
 	}
 
 	public function destroy($id)
@@ -75,9 +75,9 @@ class TagController extends Controller
 
 		if ($tag) {
 			$tag->delete();
-			return $this->sendResponse('tag deleted successfully');
+			return $this->sendResponse('Tag deleted successfully');
 		}
 
-		return $this->sendError('tag not found');
+		return $this->sendError('Tag not found');
 	}
 }
