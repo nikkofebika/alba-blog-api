@@ -4,82 +4,80 @@ namespace App\Http\Controllers;
 
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 class TagController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+	public function index($id = null)
+	{
+		if ($id != null) {
+			$tag = Tag::where('id', $id)->first();
+		} else {
+			$tag = Tag::all();
+		}
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+		if ($tag) {
+			return $this->sendResponse('tag found successfully', $tag, 201);
+		}
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+		return $this->sendError('tag not found');
+	}
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Tag  $tag
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Tag $tag)
-    {
-        //
-    }
+	public function store(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'title' => 'required|unique:categories',
+		]);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Tag  $tag
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Tag $tag)
-    {
-        //
-    }
+		if ($validator->fails()) {
+			return $this->sendError('Invalid input', $validator->errors());
+		}
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Tag  $tag
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Tag $tag)
-    {
-        //
-    }
+		$tag = Tag::create([
+			'title' => $request->input('title'),
+			'seo_title' => Str::slug($request->input('title'), '-'),
+		]);
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Tag  $tag
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Tag $tag)
-    {
-        //
-    }
+		if ($tag) {
+			return $this->sendResponse('tag created succesfully', $tag, 201);
+		}
+
+		return $this->sendError('Failed to create tag');
+	}
+
+	public function update(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'title' => 'required|unique:categories,title,'.$id,
+		]);
+
+		if ($validator->fails()) {
+			return $this->sendError('Invalid input', $validator->errors());
+		}
+
+		$tag = Tag::where('id', $id)->first();
+
+		if ($tag) {
+			$tag->title = $request->input('title');
+			$tag->seo_title = Str::slug($request->input('title'), '-');
+			$tag->save();
+
+			return $this->sendResponse('tag updated successfully', $tag);
+		}
+
+		return $this->sendError('tag not found');
+	}
+
+	public function destroy($id)
+	{
+		$tag = Tag::where('id', $id)->first();
+
+		if ($tag) {
+			$tag->delete();
+			return $this->sendResponse('tag deleted successfully');
+		}
+
+		return $this->sendError('tag not found');
+	}
 }

@@ -18,11 +18,7 @@ class AuthController extends Controller
 		]);
 
 		if ($validator->fails()) {
-			return response()->json([
-				'success' => false,
-				'message' => 'Invalid input',
-				'data' => $validator->errors(),
-			], 400);
+			return $this->sendError('Invalid input', $validator->errors());
 		}
 
 		$user = User::create([
@@ -32,18 +28,10 @@ class AuthController extends Controller
 		]);
 
 		if ($user) {
-			return response()->json([
-				'success' => true,
-				'message' => 'User registered succesfully',
-				'data' => $user,
-			], 201);
+			return $this->sendResponse('User registered succesfully', $user, 201);
 		}
 
-		return response()->json([
-			'success' => false,
-			'message' => 'Failed to register',
-			'data' => null,
-		], 400);
+		return $this->sendError('Failed to register');
 	}
 
 	public function login(Request $request){
@@ -53,11 +41,7 @@ class AuthController extends Controller
 		]);
 
 		if ($validator->fails()) {
-			return response()->json([
-				'success' => false,
-				'message' => 'Invalid input',
-				'data' => $validator->errors(),
-			], 400);
+			return $this->sendError('Invalid input', $validator->errors());
 		}
 
 		$user = User::where("email", $request->input("email"))->first();
@@ -68,20 +52,12 @@ class AuthController extends Controller
 				'api_token' => $token
 			]);
 
-			return response()->json([
-				'success' => true,
-				'message' => 'User authenticated succesfully',
-				'data' => [
-					'user' => $user,
-					'token' => $token,
-				],
-			], 200);
+			return $this->sendResponse('User authenticated succesfully', [
+				'user' => $user,
+				'token' => $token,
+			]);
 		}
 
-		return response()->json([
-			'success' => false,
-			'message' => "Credentials don't match",
-			'data' => null,
-		], 400);
+		return $this->sendError("Credentials don't match");
 	}
 }

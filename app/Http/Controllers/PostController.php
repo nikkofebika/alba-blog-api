@@ -4,82 +4,80 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
 
 class PostController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
+	public function index($id = null)
+	{
+		if ($id != null) {
+			$post = Post::where('id', $id)->first();
+		} else {
+			$post = Post::all();
+		}
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
+		if ($post) {
+			return $this->sendResponse('Post found successfully', $post, 201);
+		}
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
+		return $this->sendError('Post not found');
+	}
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Post $post)
-    {
-        //
-    }
+	public function store(Request $request)
+	{
+		$validator = Validator::make($request->all(), [
+			'title' => 'required|unique:categories',
+		]);
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Post $post)
-    {
-        //
-    }
+		if ($validator->fails()) {
+			return $this->sendError('Invalid input', $validator->errors());
+		}
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Post $post)
-    {
-        //
-    }
+		$post = Post::create([
+			'title' => $request->input('title'),
+			'seo_title' => Str::slug($request->input('title'), '-'),
+		]);
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Post  $post
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Post $post)
-    {
-        //
-    }
+		if ($post) {
+			return $this->sendResponse('Post created succesfully', $post, 201);
+		}
+
+		return $this->sendError('Failed to create post');
+	}
+
+	public function update(Request $request, $id)
+	{
+		$validator = Validator::make($request->all(), [
+			'title' => 'required|unique:categories,title,'.$id,
+		]);
+
+		if ($validator->fails()) {
+			return $this->sendError('Invalid input', $validator->errors());
+		}
+
+		$post = Post::where('id', $id)->first();
+
+		if ($post) {
+			$post->title = $request->input('title');
+			$post->seo_title = Str::slug($request->input('title'), '-');
+			$post->save();
+
+			return $this->sendResponse('Post updated successfully', $post);
+		}
+
+		return $this->sendError('Post not found');
+	}
+
+	public function destroy($id)
+	{
+		$post = Post::where('id', $id)->first();
+
+		if ($post) {
+			$post->delete();
+			return $this->sendResponse('Post deleted successfully');
+		}
+
+		return $this->sendError('Post not found');
+	}
 }
