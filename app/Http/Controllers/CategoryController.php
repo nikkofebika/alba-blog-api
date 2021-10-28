@@ -11,14 +11,26 @@ class CategoryController extends Controller
 {
     public function index($id = null)
     {
+        $data = [];
         if ($id != null) {
             $category = Category::where('id', $id)->first();
+            if (!$category) {
+                return $this->sendError('Category not found');
+            }
+            $data = $category->toArray();
+            $data['total_posts'] = count($category->posts);
         } else {
-            $category = Category::all();
+            $categories = Category::all();
+            if (count($categories) > 0) {
+                foreach ($categories as $category) {
+                    $data[$category->id] = $category->toArray();
+                    $data[$category->id]['total_posts'] = count($category->posts);
+                }
+            }
         }
 
-        if ($category) {
-            return $this->sendResponse('Category found successfully', $category, 201);
+        if (count($data) > 0) {
+            return $this->sendResponse('Category found successfully', $data, 201);
         }
 
         return $this->sendError('Category not found');

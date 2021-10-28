@@ -43,7 +43,9 @@ $router->group(['middleware' => 'auth'], function () use ($router) {
 		$router->get('/', 'PostController@index');
 		$router->get('{id}', 'PostController@index');
 		$router->post('/', 'PostController@store');
-		$router->put('{id}', 'PostController@update');
+		$router->post('{id}', 'PostController@store');
+		// $router->post('/', 'PostController@store');
+		// $router->put('{id}', 'PostController@update');
 		$router->delete('{id}', 'PostController@destroy');
 	});
 });

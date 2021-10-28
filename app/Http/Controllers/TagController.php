@@ -11,14 +11,26 @@ class TagController extends Controller
 {
 	public function index($id = null)
 	{
+		$data = [];
 		if ($id != null) {
 			$tag = Tag::where('id', $id)->first();
+			if (!$tag) {
+				return $this->sendError('Tag not found');
+			}
+			$data = $tag->toArray();
+			$data['total_posts'] = count($tag->posts);
 		} else {
-			$tag = Tag::all();
+			$tags = Tag::all();
+			if (count($tags) > 0) {
+				foreach ($tags as $tag) {
+					$data[$tag->id] = $tag->toArray();
+					$data[$tag->id]['total_posts'] = count($tag->posts);
+				}
+			}
 		}
 
-		if ($tag) {
-			return $this->sendResponse('Tag found successfully', $tag, 201);
+		if (count($data) > 0) {
+			return $this->sendResponse('Tag found successfully', $data, 201);
 		}
 
 		return $this->sendError('Tag not found');

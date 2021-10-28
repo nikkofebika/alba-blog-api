@@ -18,6 +18,7 @@ class PostSeeder extends Seeder
     	$titles = ['Post 1', 'Post 2', 'Post 3'];
 
     	foreach ($titles as $i => $t) {
+            $i++;
     		Post::create([
     			'user_id' => 1,
                 'category_id' => $i,
