@@ -30,7 +30,7 @@ class CategoryController extends Controller
         }
 
         if (count($data) > 0) {
-            return $this->sendResponse('Category found successfully', $data, 201);
+            return $this->sendResponse('Category found successfully', $data);
         }
 
         return $this->sendError('Category not found');

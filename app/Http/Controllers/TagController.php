@@ -30,7 +30,7 @@ class TagController extends Controller
 		}
 
 		if (count($data) > 0) {
-			return $this->sendResponse('Tag found successfully', $data, 201);
+			return $this->sendResponse('Tag found successfully', $data);
 		}
 
 		return $this->sendError('Tag not found');

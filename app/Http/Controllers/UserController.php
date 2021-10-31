@@ -16,7 +16,7 @@ class UserController extends Controller
         }
 
         if ($user) {
-            return $this->sendResponse('User found successfully', $user, 201);
+            return $this->sendResponse('User found successfully', $user);
         }
 
         return $this->sendError('User not found');

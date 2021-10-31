@@ -51,7 +51,7 @@ class PostController extends Controller
 		}
 
 		if (count($data) > 0) {
-			return $this->sendResponse('Post found successfully', $data, 201);
+			return $this->sendResponse('Post found successfully', $data);
 		}
 
 		return $this->sendError('Post not found');
