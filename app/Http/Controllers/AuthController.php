@@ -45,6 +45,9 @@ class AuthController extends Controller
 		}
 
 		$user = User::where("email", $request->input("email"))->first();
+		if (!$user) {
+			return $this->sendError("Credentials don't match");
+		}
 
 		if (Hash::check($request->input("password"), $user->password)) {
 			$token = base64_encode(Str::random(40));
